@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RadioNitroz Studio Console: Admin</title>
+<link rel="stylesheet" href="../public/css/style.css">
+</head>
+<body>
+
+<div id="app">
+  <header class="app-header">
+    <h1>Studio Console: Admin</h1>
+    <div aria-live="polite">{{ statusLine }}</div>
+  </header>
+
+  <main>
+    <section v-if="!authenticated" class="panel" aria-labelledby="login-heading">
+      <h2 id="login-heading">Admin sign in</h2>
+      <form @submit.prevent="login">
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" v-model="loginForm.email" type="email" required autocomplete="username">
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" v-model="loginForm.password" type="password" required autocomplete="current-password">
+        </div>
+        <button type="submit">Sign in</button>
+        <p v-if="loginError" role="alert">{{ loginError }}</p>
+      </form>
+    </section>
+
+    <template v-else>
+      <section class="panel" aria-labelledby="filter-heading">
+        <h2 id="filter-heading" class="visually-hidden">Filter submissions</h2>
+        <div class="field">
+          <label for="filter">Show</label>
+          <select id="filter" v-model="filter">
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+            <option value="all">All</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="queue-heading">
+        <h2 id="queue-heading">Submission queue</h2>
+        <table>
+          <caption class="visually-hidden">Content submissions awaiting or already reviewed</caption>
+          <thead>
+            <tr>
+              <th scope="col">Member</th>
+              <th scope="col">Title</th>
+              <th scope="col">Submitted</th>
+              <th scope="col">Status</th>
+              <th scope="col"><span class="visually-hidden">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-if="filteredSubmissions.length === 0">
+              <td colspan="5">Nothing here.</td>
+            </tr>
+            <tr v-for="sub in filteredSubmissions" :key="sub.id">
+              <td>{{ sub.member_name }}</td>
+              <td>{{ sub.content_title }}</td>
+              <td>{{ sub.submitted_at }}</td>
+              <td><span class="badge" :class="sub.status">{{ sub.status }}</span></td>
+              <td>
+                <button v-if="sub.status === 'pending'" @click="review(sub.id, 'approved')">Approve</button>
+                <button v-if="sub.status === 'pending'" class="danger" @click="review(sub.id, 'rejected')">Reject</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <button class="secondary" @click="logout">Sign out</button>
+    </template>
+
+    <div class="toast" role="status" v-if="toast">{{ toast }}</div>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.21/vue.global.prod.min.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

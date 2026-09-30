@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="studioApp">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RadioNitroz Studio Console: Legacy (AngularJS)</title>
+<link rel="stylesheet" href="../../public/css/style.css">
+</head>
+<body ng-controller="SlotsController as vm">
+
+<header class="app-header">
+  <h1>Studio Console: AngularJS view</h1>
+  <div aria-live="polite">{{ vm.statusLine }}</div>
+</header>
+
+<main>
+
+  <section class="panel" ng-if="!vm.authenticated" aria-labelledby="login-heading">
+    <h2 id="login-heading">Sign in</h2>
+    <form ng-submit="vm.login()">
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" ng-model="vm.form.email" required autocomplete="username">
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" ng-model="vm.form.password" required autocomplete="current-password">
+      </div>
+      <button type="submit">Sign in</button>
+      <p role="alert" ng-if="vm.loginError">{{ vm.loginError }}</p>
+    </form>
+  </section>
+
+  <div ng-if="vm.authenticated">
+    <section class="panel" aria-labelledby="slots-heading">
+      <h2 id="slots-heading">Studio slots</h2>
+      <table>
+        <caption class="visually-hidden">Available and booked studio slots</caption>
+        <thead>
+          <tr>
+            <th scope="col">Show</th>
+            <th scope="col">Date</th>
+            <th scope="col">Time</th>
+            <th scope="col">Status</th>
+            <th scope="col"><span class="visually-hidden">Action</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-if="vm.slots.length === 0">
+            <td colspan="5">No slots yet.</td>
+          </tr>
+          <tr ng-repeat="slot in vm.slots">
+            <td>{{ slot.show_title }}</td>
+            <td>{{ slot.slot_date }}</td>
+            <td>{{ slot.start_time }} to {{ slot.end_time }}</td>
+            <td><span class="badge" ng-class="slot.status">{{ slot.status }}</span></td>
+            <td>
+              <button ng-if="slot.status === 'open'" ng-click="vm.book(slot.id)">Book</button>
+              <span ng-if="slot.status !== 'open'">{{ slot.booked_by_name }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <button class="secondary" ng-click="vm.logout()">Sign out</button>
+  </div>
+
+  <div class="toast" role="status" ng-if="vm.toast">{{ vm.toast }}</div>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.3/angular.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+name: Cross-browser smoke test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: radionitroz_studio
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mysqli
+
+      - name: Load schema
+        run: mysql -h127.0.0.1 -uroot -proot radionitroz_studio < database/schema.sql
+
+      - name: Start PHP server
+        run: |
+          DB_HOST=127.0.0.1 DB_USER=root DB_PASS=root DB_NAME=radionitroz_studio \
+          php -S localhost:8000 -t . &
+          sleep 2
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright
+        run: |
+          npm install
+          npx playwright install --with-deps
+
+      - name: Run smoke tests
+        run: npx playwright test

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RadioNitroz Studio Console: Legacy (KnockoutJS)</title>
+<link rel="stylesheet" href="../../public/css/style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <h1>Studio Console: KnockoutJS view</h1>
+  <div aria-live="polite" data-bind="text: statusLine"></div>
+</header>
+
+<main>
+
+  <section class="panel" data-bind="visible: !authenticated()" aria-labelledby="login-heading">
+    <h2 id="login-heading">Sign in</h2>
+    <form data-bind="submit: login">
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" data-bind="value: form.email" required autocomplete="username">
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" data-bind="value: form.password" required autocomplete="current-password">
+      </div>
+      <button type="submit">Sign in</button>
+      <p role="alert" data-bind="visible: loginError, text: loginError"></p>
+    </form>
+  </section>
+
+  <div data-bind="visible: authenticated">
+
+    <section class="panel" aria-labelledby="submit-heading">
+      <h2 id="submit-heading">Submit content for review</h2>
+      <form data-bind="submit: submit">
+        <div class="field">
+          <label for="content-title">Title</label>
+          <input type="text" id="content-title" data-bind="value: newTitle" required>
+        </div>
+        <div class="field">
+          <label for="content-notes">Notes</label>
+          <textarea id="content-notes" data-bind="value: newNotes" rows="3"></textarea>
+        </div>
+        <button type="submit">Submit</button>
+      </form>
+    </section>
+
+    <section class="panel" aria-labelledby="my-submissions-heading">
+      <h2 id="my-submissions-heading">My submissions</h2>
+      <div class="field">
+        <label for="status-filter">Filter</label>
+        <select id="status-filter" data-bind="value: filter">
+          <option value="all">All</option>
+          <option value="pending">Pending</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
+      <table>
+        <caption class="visually-hidden">Your submitted content and its review status</caption>
+        <thead>
+          <tr>
+            <th scope="col">Title</th>
+            <th scope="col">Submitted</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody data-bind="foreach: filteredSubmissions">
+          <tr>
+            <td data-bind="text: content_title"></td>
+            <td data-bind="text: submitted_at"></td>
+            <td><span class="badge" data-bind="css: status, text: status"></span></td>
+          </tr>
+        </tbody>
+      </table>
+      <p data-bind="visible: filteredSubmissions().length === 0">Nothing here.</p>
+    </section>
+
+    <button class="secondary" data-bind="click: logout">Sign out</button>
+  </div>
+
+  <div class="toast" role="status" data-bind="visible: toast, text: toast"></div>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.1/knockout-min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "radionitroz-studio-console",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PHP + MySQL studio console for RadioNitroz, with jQuery member pages and a Vue 3 admin queue.",
+  "scripts": {
+    "serve": "php -S localhost:8000 -t .",
+    "test": "playwright test",
+    "test:report": "playwright show-report",
+    "audit:a11y": "node tests/axe-audit.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.47.0",
+    "axe-core": "^4.13.0",
+    "jsdom": "^30.1.1"
+  }
+}
